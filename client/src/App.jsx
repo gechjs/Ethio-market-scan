@@ -225,10 +225,10 @@ function App() {
           padding: 12,
           boxPadding: 4,
           callbacks: {
-            label: function(context) {
-              return `${context.dataset.label}: ${context.parsed.y} ETB`;
-            }
-          }
+            label: function (context) {
+              return `${context.dataset.label}: ${context.parsed.y} ETB/kg`;
+            },
+          },
         },
       },
       scales: {
@@ -351,10 +351,7 @@ function App() {
           <div className="section-header">
             <h2>🔥 Featured Today</h2>
             <div className="city-filter">
-              <select
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              >
+              <select value={city} onChange={(e) => setCity(e.target.value)}>
                 <option value="">All cities</option>
                 {[
                   ...new Set(
@@ -370,11 +367,11 @@ function App() {
               </select>
             </div>
           </div>
-          
+
           <div className="featured-grid">
             {featured.map((f, idx) => (
-              <div 
-                key={`${f.market}-${f.commodity}-${idx}`} 
+              <div
+                key={`${f.market}-${f.commodity}-${idx}`}
                 className="featured-card"
                 onClick={async () => {
                   setSelectedMarket(f.market);
@@ -386,8 +383,19 @@ function App() {
                   <ItemBadge item={f.commodity} />
                   <MarketBadge market={f.market} />
                 </div>
-                <div className="featured-price">{f.latest_price} ETB</div>
-                <div className={`featured-change ${(f.change_percent || 0) > 0 ? 'positive' : (f.change_percent || 0) < 0 ? 'negative' : 'neutral'}`}>
+                <div className="featured-price">
+                  {f.latest_price} ETB/
+                  {f.item_meta && f.item_meta.unit ? f.item_meta.unit : "kg"}
+                </div>
+                <div
+                  className={`featured-change ${
+                    (f.change_percent || 0) > 0
+                      ? "positive"
+                      : (f.change_percent || 0) < 0
+                      ? "negative"
+                      : "neutral"
+                  }`}
+                >
                   {(f.change_percent || 0) > 0
                     ? "↗"
                     : (f.change_percent || 0) < 0
@@ -405,7 +413,7 @@ function App() {
           <div className="section-header">
             <h2>📈 Market Analysis</h2>
           </div>
-          
+
           <div className="analysis-container">
             <div className="market-selector">
               <div className="selector-group">
@@ -421,7 +429,7 @@ function App() {
                   ))}
                 </select>
               </div>
-              
+
               <div className="selector-group">
                 <label>Commodity</label>
                 <select
@@ -435,7 +443,7 @@ function App() {
                   ))}
                 </select>
               </div>
-              
+
               <button
                 onClick={handleCheckPrice}
                 disabled={loading}
@@ -444,7 +452,7 @@ function App() {
                 {loading ? "🔍 Checking..." : "📊 Check Price"}
               </button>
             </div>
-            
+
             <div className="ai-ask">
               <input
                 value={askText}
@@ -455,13 +463,9 @@ function App() {
               <button onClick={handleAsk}>Ask</button>
             </div>
           </div>
-          
-          {error && (
-            <div className="error-banner">
-              ⚠️ {error}
-            </div>
-          )}
-          
+
+          {error && <div className="error-banner">⚠️ {error}</div>}
+
           <div className="data-visualization">
             <div className="chart-container">
               <h3>Price Trend</h3>
@@ -469,7 +473,7 @@ function App() {
                 <Line data={chartData} options={chartOptions} />
               </div>
             </div>
-            
+
             <div className="market-details">
               <h3>Market Details</h3>
               <div className="details-grid">
@@ -477,20 +481,34 @@ function App() {
                   <div className="detail-label">Market</div>
                   <div className="detail-value">{selectedMarket || "—"}</div>
                 </div>
-                
+
                 <div className="detail-card">
                   <div className="detail-label">Commodity</div>
                   <div className="detail-value">{selectedCommodity || "—"}</div>
                 </div>
-                
+
                 <div className="detail-card">
                   <div className="detail-label">Latest Price</div>
-                  <div className="detail-value">{latestPrice !== null ? `${latestPrice} ETB` : "—"}</div>
+                  <div className="detail-value">
+                    {latestPrice !== null
+                      ? `${latestPrice} ETB/${
+                          itemsMeta[selectedCommodity]?.unit || "kg"
+                        }`
+                      : "—"}
+                  </div>
                 </div>
-                
+
                 <div className="detail-card">
                   <div className="detail-label">7-Day Change</div>
-                  <div className={`detail-value ${isPositiveChange ? 'positive' : isNegativeChange ? 'negative' : 'neutral'}`}>
+                  <div
+                    className={`detail-value ${
+                      isPositiveChange
+                        ? "positive"
+                        : isNegativeChange
+                        ? "negative"
+                        : "neutral"
+                    }`}
+                  >
                     {changePct !== null ? (
                       <span>
                         {isPositiveChange ? "↗" : isNegativeChange ? "↘" : "→"}{" "}
@@ -511,7 +529,7 @@ function App() {
           <div className="section-header">
             <h2>🤖 AI Insights</h2>
           </div>
-          
+
           <div className="ai-insights">
             <div className="ai-card">
               <div className="ai-header">
@@ -522,7 +540,7 @@ function App() {
                   </div>
                 )}
               </div>
-              
+
               <div className="ai-content">
                 {loading ? (
                   <div className="ai-loading">Generating insights...</div>
@@ -543,7 +561,7 @@ function App() {
                 )}
               </div>
             </div>
-            
+
             <div className="ai-examples">
               <h4>Try asking:</h4>
               <ul>
@@ -566,52 +584,63 @@ function App() {
           <div className="section-header">
             <h2>📊 Market Insights</h2>
           </div>
-          
+
           <div className="insights-grid">
             <div className="insight-card">
               <h3>Seasonal Trends</h3>
-              <p>Onion prices typically peak during July-September due to harvest cycles</p>
+              <p>
+                Onion prices typically peak during July-September due to harvest
+                cycles
+              </p>
               <div className="trend-badge">Peak Season</div>
             </div>
-            
+
             <div className="insight-card">
               <h3>Regional Variations</h3>
-              <p>Coffee prices in Hawassa are 8-10% lower than in Addis Ababa markets</p>
+              <p>
+                Coffee prices in Hawassa are 8-10% lower than in Addis Ababa
+                markets
+              </p>
               <div className="trend-badge positive">Cost Saving</div>
             </div>
-            
+
             <div className="insight-card">
               <h3>Supply Chain</h3>
-              <p>Teff remains stable year-round due to robust national supply chains</p>
+              <p>
+                Teff remains stable year-round due to robust national supply
+                chains
+              </p>
               <div className="trend-badge neutral">Stable</div>
             </div>
-            
+
             <div className="insight-card">
               <h3>Upcoming Events</h3>
-              <p>Expect price volatility during Meskel festival (September 27)</p>
+              <p>
+                Expect price volatility during Meskel festival (September 27)
+              </p>
               <div className="trend-badge warning">Volatility</div>
             </div>
           </div>
         </div>
-        
+
         <div className="section">
           <div className="section-header">
             <h2>📈 Commodity Analysis</h2>
           </div>
-          
+
           <div className="commodity-stats">
             <div className="stat-card">
               <div className="stat-value">+24%</div>
               <div className="stat-label">Onion Price Increase</div>
               <div className="stat-desc">Last 14 days in Merkato</div>
             </div>
-            
+
             <div className="stat-card">
               <div className="stat-value">-3%</div>
               <div className="stat-label">Tomato Price Change</div>
               <div className="stat-desc">Weekly average across markets</div>
             </div>
-            
+
             <div className="stat-card">
               <div className="stat-value">82%</div>
               <div className="stat-label">AI Confidence</div>
@@ -626,41 +655,34 @@ function App() {
   return (
     <div className="app-container">
       {/* Sidebar */}
-      <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
+      <div className={`sidebar ${isMenuOpen ? "open" : ""}`}>
         <div className="sidebar-header">
           <div className="logo">
             <div className="logo-icon">🥬</div>
             <h1>Ethio Market Scan</h1>
           </div>
-          <button 
-            className="close-menu" 
-            onClick={() => setIsMenuOpen(false)}
-          >
+          <button className="close-menu" onClick={() => setIsMenuOpen(false)}>
             &times;
           </button>
         </div>
-        
+
         <div className="sidebar-menu">
-          <button 
-            className={`menu-item ${activeTab === "dashboard" ? 'active' : ''}`}
+          <button
+            className={`menu-item ${activeTab === "dashboard" ? "active" : ""}`}
             onClick={() => setActiveTab("dashboard")}
           >
             📊 Dashboard
           </button>
-          <button 
-            className={`menu-item ${activeTab === "insights" ? 'active' : ''}`}
+          <button
+            className={`menu-item ${activeTab === "insights" ? "active" : ""}`}
             onClick={() => setActiveTab("insights")}
           >
             🔍 Insights
           </button>
-          <button className="menu-item">
-            📈 Reports
-          </button>
-          <button className="menu-item">
-            ⚙️ Settings
-          </button>
+          <button className="menu-item">📈 Reports</button>
+          <button className="menu-item">⚙️ Settings</button>
         </div>
-        
+
         <div className="sidebar-footer">
           <div className="user-info">
             <div className="user-avatar">GM</div>
@@ -671,22 +693,19 @@ function App() {
           </div>
         </div>
       </div>
-      
+
       {/* Main content */}
       <div className="main-content">
         {/* Top bar */}
         <div className="top-bar">
-          <button 
+          <button
             className="menu-toggle"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             ☰
           </button>
           <div className="search-bar">
-            <input 
-              type="text" 
-              placeholder="Search markets, commodities..." 
-            />
+            <input type="text" placeholder="Search markets, commodities..." />
             <button>🔍</button>
           </div>
           <div className="user-actions">
@@ -696,12 +715,12 @@ function App() {
             </div>
           </div>
         </div>
-        
+
         {/* Content area */}
         <div className="content-area">
           {activeTab === "dashboard" ? renderDashboard() : renderInsights()}
         </div>
-        
+
         {/* Footer */}
         <div className="footer">
           <div className="footer-content">
