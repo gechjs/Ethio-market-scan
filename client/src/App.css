@@ -21,7 +21,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 body {
@@ -270,6 +271,117 @@ body {
   font-weight: 600;
 }
 
+/* Category accent colors (used on item badges and featured cards) */
+.item-badge.cat-vegetables {
+  background: rgba(16, 185, 129, 0.08);
+}
+.featured-card.cat-vegetables {
+  border-color: rgba(16, 185, 129, 0.25);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.08);
+}
+
+.item-badge.cat-grains {
+  background: rgba(245, 158, 11, 0.08);
+}
+.featured-card.cat-grains {
+  border-color: rgba(245, 158, 11, 0.25);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.08);
+}
+
+.item-badge.cat-export {
+  background: rgba(99, 102, 241, 0.08);
+}
+.featured-card.cat-export {
+  border-color: rgba(99, 102, 241, 0.25);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.08);
+}
+
+.item-badge.cat-legumes {
+  background: rgba(139, 92, 246, 0.08);
+}
+.featured-card.cat-legumes {
+  border-color: rgba(139, 92, 246, 0.25);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.08);
+}
+
+/* Soft gradient headers */
+.section-header h2 {
+  background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glass effect cards */
+.section {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.85) 100%
+  );
+  backdrop-filter: blur(6px);
+}
+
+/* Animated hover for featured cards */
+.featured-card {
+  position: relative;
+}
+.featured-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: radial-gradient(
+    1200px 60px at var(--mx, 50%) var(--my, 0%),
+    rgba(99, 102, 241, 0.08),
+    transparent 40%
+  );
+  transition: opacity 0.25s;
+  opacity: 0;
+  pointer-events: none;
+}
+.featured-card:hover::after {
+  opacity: 1;
+}
+
+/* Market and item badges subtle borders */
+.market-badge,
+.item-badge {
+  border: 1px solid var(--border);
+}
+
+/* Chart container subtle gradient */
+.chart-container {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+/* Buttons: glow on hover */
+.check-price-btn:hover {
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
+}
+.ai-ask button:hover {
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
+}
+
+/* Top bar gradient underline */
+.top-bar {
+  position: relative;
+}
+.top-bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  opacity: 0.25;
+}
+
+/* Footer subtle gradient */
+.footer {
+  background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+}
+
 /* Featured grid */
 .featured-grid {
   display: grid;
@@ -298,7 +410,8 @@ body {
   margin-bottom: 1rem;
 }
 
-.market-badge, .item-badge {
+.market-badge,
+.item-badge {
   display: inline-flex;
   align-items: center;
   font-size: 0.8rem;
@@ -308,11 +421,13 @@ body {
   gap: 0.5rem;
 }
 
-.market-name, .item-name {
+.market-name,
+.item-name {
   font-weight: 600;
 }
 
-.market-city, .item-category {
+.market-city,
+.item-category {
   color: var(--text-light);
   font-size: 0.75rem;
 }
@@ -453,14 +568,16 @@ body {
   margin-top: 1.5rem;
 }
 
-.chart-container, .market-details {
+.chart-container,
+.market-details {
   background: white;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
 }
 
-.chart-container h3, .market-details h3 {
+.chart-container h3,
+.market-details h3 {
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -742,35 +859,35 @@ body {
   .sidebar {
     transform: translateX(-100%);
   }
-  
+
   .sidebar.open {
     transform: translateX(0);
   }
-  
+
   .main-content {
     margin-left: 0;
   }
-  
+
   .menu-toggle {
     display: block;
   }
-  
+
   .close-menu {
     display: block;
   }
-  
+
   .search-bar {
     width: 300px;
   }
-  
+
   .analysis-container {
     grid-template-columns: 1fr;
   }
-  
+
   .data-visualization {
     grid-template-columns: 1fr;
   }
-  
+
   .ai-insights {
     grid-template-columns: 1fr;
   }
@@ -780,29 +897,29 @@ body {
   .top-bar {
     padding: 1rem;
   }
-  
+
   .search-bar {
     width: 200px;
   }
-  
+
   .featured-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
-  
+
   .market-selector {
     grid-template-columns: 1fr;
   }
-  
+
   .commodity-stats {
     grid-template-columns: 1fr;
   }
-  
+
   .footer-content {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
   }
-  
+
   .footer-links {
     justify-content: center;
   }

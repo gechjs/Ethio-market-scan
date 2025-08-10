@@ -106,6 +106,7 @@ function App() {
   const [error, setError] = useState("");
 
   const [askText, setAskText] = useState("");
+  const [searchText, setSearchText] = useState("");
 
   const [city, setCity] = useState("");
   const [featured, setFeatured] = useState([]);
@@ -305,6 +306,37 @@ function App() {
     return { market: foundMarket, commodity: foundCommodity };
   }
 
+  function parseTopSearch(text) {
+    const q = (text || "").toLowerCase();
+    const marketsList = markets || [];
+    const commoditiesList =
+      localData?.commodities || Object.keys(localData?.items_meta || {}) || [];
+    let foundMarket = marketsList.find((m) => q.includes(m.toLowerCase()));
+    let foundCommodity = commoditiesList.find((c) =>
+      q.includes(c.toLowerCase())
+    );
+    if (!foundCommodity && q.includes(" in ")) {
+      const [left, right] = q.split(" in ");
+      if (left) {
+        foundCommodity = commoditiesList.find((c) =>
+          left.includes(c.toLowerCase())
+        );
+      }
+      if (right) {
+        foundMarket = marketsList.find((m) => right.includes(m.toLowerCase()));
+      }
+    }
+    return { market: foundMarket, commodity: foundCommodity };
+  }
+
+  async function handleSearch() {
+    const { market, commodity } = parseTopSearch(searchText);
+    if (!market && !commodity) return;
+    if (market) setSelectedMarket(market);
+    if (commodity) setSelectedCommodity(commodity);
+    setTimeout(() => handleCheckPrice(), 0);
+  }
+
   async function handleAsk() {
     setError("");
     const { market, commodity } = parseAsk(askText);
@@ -335,8 +367,11 @@ function App() {
   function ItemBadge({ item }) {
     const meta = itemsMeta[item] || {};
     const cat = meta.category || "—";
+    const catClass = `cat-${String(cat)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")}`;
     return (
-      <span className="item-badge">
+      <span className={`item-badge ${catClass}`}>
         <span className="item-name">{item}</span>
         <span className="item-category">{cat}</span>
       </span>
@@ -369,42 +404,48 @@ function App() {
           </div>
 
           <div className="featured-grid">
-            {featured.map((f, idx) => (
-              <div
-                key={`${f.market}-${f.commodity}-${idx}`}
-                className="featured-card"
-                onClick={async () => {
-                  setSelectedMarket(f.market);
-                  setSelectedCommodity(f.commodity);
-                  await handleCheckPrice();
-                }}
-              >
-                <div className="featured-header">
-                  <ItemBadge item={f.commodity} />
-                  <MarketBadge market={f.market} />
-                </div>
-                <div className="featured-price">
-                  {f.latest_price} ETB/
-                  {f.item_meta && f.item_meta.unit ? f.item_meta.unit : "kg"}
-                </div>
+            {featured.map((f, idx) => {
+              const cat = f.item_meta?.category || "";
+              const catClass = `cat-${String(cat)
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")}`;
+              return (
                 <div
-                  className={`featured-change ${
-                    (f.change_percent || 0) > 0
-                      ? "positive"
-                      : (f.change_percent || 0) < 0
-                      ? "negative"
-                      : "neutral"
-                  }`}
+                  key={`${f.market}-${f.commodity}-${idx}`}
+                  className={`featured-card ${catClass}`}
+                  onClick={async () => {
+                    setSelectedMarket(f.market);
+                    setSelectedCommodity(f.commodity);
+                    await handleCheckPrice();
+                  }}
                 >
-                  {(f.change_percent || 0) > 0
-                    ? "↗"
-                    : (f.change_percent || 0) < 0
-                    ? "↘"
-                    : "→"}{" "}
-                  {Math.abs(f.change_percent || 0).toFixed(1)}%
+                  <div className="featured-header">
+                    <ItemBadge item={f.commodity} />
+                    <MarketBadge market={f.market} />
+                  </div>
+                  <div className="featured-price">
+                    {f.latest_price} ETB/
+                    {f.item_meta && f.item_meta.unit ? f.item_meta.unit : "kg"}
+                  </div>
+                  <div
+                    className={`featured-change ${
+                      (f.change_percent || 0) > 0
+                        ? "positive"
+                        : (f.change_percent || 0) < 0
+                        ? "negative"
+                        : "neutral"
+                    }`}
+                  >
+                    {(f.change_percent || 0) > 0
+                      ? "↗"
+                      : (f.change_percent || 0) < 0
+                      ? "↘"
+                      : "→"}{" "}
+                    {Math.abs(f.change_percent || 0).toFixed(1)}%
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -705,8 +746,14 @@ function App() {
             ☰
           </button>
           <div className="search-bar">
-            <input type="text" placeholder="Search markets, commodities..." />
-            <button>🔍</button>
+            <input
+              type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="Search: 'onion in Merkato' or 'teff Bole'"
+            />
+            <button onClick={handleSearch}>🔍</button>
           </div>
           <div className="user-actions">
             <button className="notification-btn">🔔</button>
